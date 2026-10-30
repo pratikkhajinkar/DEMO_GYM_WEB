@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TITAN FORGE | Premium Fitness & Elite Performance Club</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Teko:wght@500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            red: '#FF2E4C',
+                            darkred: '#991B1B',
+                            dark: '#0A0B0E',
+                            card: '#12141A',
+                            border: '#222530',
+                            accent: '#FF4D6D'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        teko: ['"Teko"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glow-red {
+            box-shadow: 0 0 25px -5px rgba(255, 46, 76, 0.4);
+        }
+        .glow-card:hover {
+            box-shadow: 0 10px 30px -10px rgba(255, 46, 76, 0.25);
+            border-color: rgba(255, 46, 76, 0.5);
+        }
+        .text-gradient {
+            background: linear-gradient(135deg, #FFFFFF 40%, #A1A1AA 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .text-gradient-red {
+            background: linear-gradient(135deg, #FF4D6D 0%, #FF2E4C 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0A0B0E;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #222530;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #FF2E4C;
+        }
+    </style>
+</head>
+<body class="bg-[#0A0B0E] text-zinc-100 font-sans selection:bg-brand-red selection:text-white antialiased">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 flex items-center gap-3 bg-[#161922] border border-brand-red text-white px-5 py-4 rounded-xl shadow-2xl">
+        <div class="w-8 h-8 rounded-full bg-brand-red/20 text-brand-red flex items-center justify-center font-bold">✓</div>
+        <div>
+            <p id="toast-title" class="font-bold text-sm tracking-wide">Success!</p>
+            <p id="toast-msg" class="text-xs text-zinc-400">Request submitted successfully.</p>
+        </div>
+    </div>
+
+    <!-- Booking Modal -->
+    <div id="bookingModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-[#12141A] border border-brand-border rounded-2xl max-w-md w-full p-6 md:p-8 relative shadow-2xl">
+            <button onclick="closeModal()" class="absolute top-5 right-5 text-zinc-400 hover:text-white transition-colors">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+            <div class="mb-6">
+                <span class="text-brand-red font-bold text-xs uppercase tracking-widest">Reserve Your Spot</span>
+                <h3 class="font-teko text-3xl font-bold tracking-wide mt-1 uppercase">Book Free Trial Session</h3>
+                <p class="text-zinc-400 text-xs mt-1">Get 1-Day VIP Pass + 1-on-1 Fitness Evaluation free.</p>
+            </div>
+            <form id="modalForm" onsubmit="handleModalSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1">Full Name</label>
+                    <input type="text" required placeholder="John Doe" class="w-full bg-[#181B24] border border-brand-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-red transition-colors text-white placeholder-zinc-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1">Phone Number</label>
+                    <input type="tel" required placeholder="+91 98765 43210" class="w-full bg-[#181B24] border border-brand-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-red transition-colors text-white placeholder-zinc-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1">Preferred Time Slot</label>
+                    <select class="w-full bg-[#181B24] border border-brand-border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-brand-red transition-colors text-white">
+                        <option>Morning (06:00 AM - 09:00 AM)</option>
+                        <option>Mid-Day (11:00 AM - 02:00 PM)</option>
+                        <option>Evening (05:00 PM - 09:00 PM)</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-brand-red hover:bg-[#ff1f40] text-white font-bold py-3.5 rounded-xl uppercase tracking-wider text-sm glow-red transition-all mt-2">
+                    Confirm Free Pass
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Navigation Header -->
+    <header class="fixed top-0 left-0 right-0 z-40 bg-[#0A0B0E]/90 backdrop-blur-md border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <a href="#" class="flex items-center gap-2 group">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-tr from-brand-red to-orange-500 flex items-center justify-center font-teko text-2xl font-bold tracking-tighter text-white shadow-lg group-hover:scale-105 transition-transform">
+                    TF
+                </div>
+                <div>
+                    <span class="font-teko text-2xl tracking-wider font-bold block leading-none">TITAN <span class="text-brand-red">FORGE</span></span>
+                    <span class="text-[9px] uppercase tracking-widest text-zinc-400 block -mt-0.5">Elite Fitness Club</span>
+                </div>
+            </a>
+
+            <!-- Desktop Nav -->
+            <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-zinc-300">
+                <a href="#about" class="hover:text-white hover:text-brand-red transition-colors">About Us</a>
+                <a href="#features" class="hover:text-white hover:text-brand-red transition-colors">Facilities</a>
+                <a href="#schedule" class="hover:text-white hover:text-brand-red transition-colors">Class Schedule</a>
+                <a href="#trainers" class="hover:text-white hover:text-brand-red transition-colors">Trainers</a>
+                <a href="#pricing" class="hover:text-white hover:text-brand-red transition-colors">Memberships</a>
+                <a href="#faq" class="hover:text-white hover:text-brand-red transition-colors">FAQ</a>
+            </nav>
+
+            <!-- Action Button -->
+            <div class="flex items-center gap-4">
+                <button onclick="openModal()" class="hidden sm:inline-flex items-center gap-2 bg-brand-red hover:bg-[#ff1f40] text-white px-5 py-2.5 rounded-full font-bold text-xs uppercase tracking-wider glow-red transition-all transform hover:-translate-y-0.5">
+                    <span>Free Day Pass</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </button>
+                <!-- Mobile Menu Button -->
+                <button id="mobileMenuBtn" class="md:hidden p-2 text-zinc-400 hover:text-white">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Drawer Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-[#0F1117] border-b border-brand-border px-6 py-5 space-y-4">
+            <a href="#about" onclick="toggleMenu()" class="block text-zinc-300 hover:text-brand-red py-1">About Us</a>
+            <a href="#features" onclick="toggleMenu()" class="block text-zinc-300 hover:text-brand-red py-1">Facilities</a>
+            <a href="#schedule" onclick="toggleMenu()" class="block text-zinc-300 hover:text-brand-red py-1">Class Schedule</a>
+            <a href="#trainers" onclick="toggleMenu()" class="block text-zinc-300 hover:text-brand-red py-1">Trainers</a>
+            <a href="#pricing" onclick="toggleMenu()" class="block text-zinc-300 hover:text-brand-red py-1">Memberships</a>
+            <a href="#faq" onclick="toggleMenu()" class="block text-zinc-300 hover:text-brand-red py-1">FAQ</a>
+            <button onclick="toggleMenu(); openModal();" class="w-full bg-brand-red text-white py-3 rounded-xl font-bold uppercase tracking-wider text-xs">Book Free Pass</button>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="relative min-h-[92vh] pt-28 pb-16 flex items-center overflow-hidden">
+            <!-- Background Image with Gradient Overlay -->
+            <div class="absolute inset-0 z-0">
+                <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1920&q=80" alt="Gym Background" class="w-full h-full object-cover object-center opacity-30">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#0A0B0E] via-[#0A0B0E]/80 to-transparent"></div>
+                <div class="absolute inset-0 bg-gradient-to-r from-[#0A0B0E] via-transparent to-[#0A0B0E]"></div>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-6 relative z-10 w-full">
+                <div class="max-w-2xl">
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-red/10 border border-brand-red/30 mb-6">
+                        <span class="w-2 h-2 rounded-full bg-brand-red animate-pulse"></span>
+                        <span class="text-brand-red text-xs font-bold uppercase tracking-widest">Premium Training Ground</span>
+                    </div>
+
+                    <h1 class="font-teko text-6xl sm:text-7xl lg:text-8xl font-bold uppercase tracking-tight leading-[0.9] text-white">
+                        Forge Your <span class="text-brand-red">Limitless</span> Physical Legacy.
+                    </h1>
+
+                    <p class="mt-6 text-zinc-300 text-base sm:text-lg leading-relaxed max-w-xl">
+                        Experience next-generation bio-mechanic equipment, Olympic lifting arenas, and certified elite master coaches committed to your athletic peak.
+                    </p>
+
+                    <div class="mt-8 flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
+                        <button onclick="openModal()" class="bg-brand-red hover:bg-[#ff1f40] text-white px-8 py-4 rounded-xl font-bold uppercase tracking-wider text-sm flex items-center justify-center gap-2 glow-red transition-all transform hover:-translate-y-0.5">
+                            <span>Claim 1-Day VIP Pass</span>
+                            <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                        </button>
+                        <a href="#schedule" class="bg-white/5 hover:bg-white/10 border border-white/10 text-white px-8 py-4 rounded-xl font-bold uppercase tracking-wider text-sm flex items-center justify-center gap-2 transition-all">
+                            <span>Explore Classes</span>
+                            <i data-lucide="calendar" class="w-4 h-4"></i>
+                        </a>
+                    </div>
+
+                    <!-- Highlight Metrics Strip -->
+                    <div class="mt-12 pt-8 border-t border-white/10 grid grid-cols-3 gap-6">
+                        <div>
+                            <span class="font-teko text-4xl sm:text-5xl font-bold text-white block">15,000+</span>
+                            <span class="text-xs uppercase tracking-wider text-zinc-400">Sq. Ft. Arena</span>
+                        </div>
+                        <div>
+                            <span class="font-teko text-4xl sm:text-5xl font-bold text-brand-red block">24 / 7</span>
+                            <span class="text-xs uppercase tracking-wider text-zinc-400">VIP Access</span>
+                        </div>
+                        <div>
+                            <span class="font-teko text-4xl sm:text-5xl font-bold text-white block">18+</span>
+                            <span class="text-xs uppercase tracking-wider text-zinc-400">Pro Master Trainers</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Facilities & Pillars -->
+        <section id="features" class="py-24 bg-[#0D0E13] border-t border-brand-border">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="text-center max-w-2xl mx-auto mb-16">
+                    <span class="text-brand-red font-bold text-xs uppercase tracking-widest">Engineered For Athletes</span>
+                    <h2 class="font-teko text-4xl sm:text-5xl font-bold tracking-wide mt-1 uppercase text-white">World-Class Infrastructure</h2>
+                    <p class="text-zinc-400 text-sm mt-3">From calibrated competition barbell sets to bio-tracking sauna suites, every detail is engineered for optimal recovery & performance.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Feature 1 -->
+                    <div class="bg-brand-card border border-brand-border p-8 rounded-2xl glow-card transition-all group">
+                        <div class="w-12 h-12 rounded-xl bg-brand-red/10 border border-brand-red/20 text-brand-red flex items-center justify-center mb-6 group-hover:bg-brand-red group-hover:text-white transition-colors">
+                            <i data-lucide="dumbbell" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="font-teko text-2xl font-bold uppercase text-white tracking-wide">Eleiko Calibrated Rigging</h3>
+                        <p class="text-zinc-400 text-sm mt-2 leading-relaxed">Olympic platforms, competition bumper plates, cambered specialty bars, and custom power racks built for heavy lifters.</p>
+                    </div>
+
+                    <!-- Feature 2 -->
+                    <div class="bg-brand-card border border-brand-border p-8 rounded-2xl glow-card transition-all group">
+                        <div class="w-12 h-12 rounded-xl bg-brand-red/10 border border-brand-red/20 text-brand-red flex items-center justify-center mb-6 group-hover:bg-brand-red group-hover:text-white transition-colors">
+                            <i data-lucide="flame" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="font-teko text-2xl font-bold uppercase text-white tracking-wide">High-Octane HIIT & Hyrox</h3>
+                        <p class="text-zinc-400 text-sm mt-2 leading-relaxed">Dedicated 50-meter turf track, SkiErgs, assault runners, plyo boxes, and sled push lanes for metabolic burn.</p>
+                    </div>
+
+                    <!-- Feature 3 -->
+                    <div class="bg-brand-card border border-brand-border p-8 rounded-2xl glow-card transition-all group">
+                        <div class="w-12 h-12 rounded-xl bg-brand-red/10 border border-brand-red/20 text-brand-red flex items-center justify-center mb-6 group-hover:bg-brand-red group-hover:text-white transition-colors">
+                            <i data-lucide="heart-pulse" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="font-teko text-2xl font-bold uppercase text-white tracking-wide">Ice Bath & Infrared Sauna</h3>
+                        <p class="text-zinc-400 text-sm mt-2 leading-relaxed">Expedite muscle repair and reduce cortisol with contrast cold-plunge pools and private chromotherapy infrared saunas.</p>
+                    </div>
+
+                    <!-- Feature 4 -->
+                    <div class="bg-brand-card border border-brand-border p-8 rounded-2xl glow-card transition-all group">
+                        <div class="w-12 h-12 rounded-xl bg-brand-red/10 border border-brand-red/20 text-brand-red flex items-center justify-center mb-6 group-hover:bg-brand-red group-hover:text-white transition-colors">
+                            <i data-lucide="apple" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="font-teko text-2xl font-bold uppercase text-white tracking-wide">Custom Nutrition Fuel Bar</h3>
+                        <p class="text-zinc-400 text-sm mt-2 leading-relaxed">Freshly formulated whey isolations, BCAA mocktails, espresso shots, and macronutrient-balanced meal prep bowls.</p>
+                    </div>
+
+                    <!-- Feature 5 -->
+                    <div class="bg-brand-card border border-brand-border p-8 rounded-2xl glow-card transition-all group">
+                        <div class="w-12 h-12 rounded-xl bg-brand-red/10 border border-brand-red/20 text-brand-red flex items-center justify-center mb-6 group-hover:bg-brand-red group-hover:text-white transition-colors">
+                            <i data-lucide="activity" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="font-teko text-2xl font-bold uppercase text-white tracking-wide">InBody 770 Bio-Scanners</h3>
+                        <p class="text-zinc-400 text-sm mt-2 leading-relaxed">Clinical visceral fat metrics, skeletal muscle mass diagnostics, and monthly automated progress benchmarks.</p>
+                    </div>
+
+                    <!-- Feature 6 -->
+                    <div class="bg-brand-card border border-brand-border p-8 rounded-2xl glow-card transition-all group">
+                        <div class="w-12 h-12 rounded-xl bg-brand-red/10 border border-brand-red/20 text-brand-red flex items-center justify-center mb-6 group-hover:bg-brand-red group-hover:text-white transition-colors">
+                            <i data-lucide="shield-check" class="w-6 h-6"></i>
+                        </div>
+                        <h3 class="font-teko text-2xl font-bold uppercase text-white tracking-wide">Keycard 24/7 Security</h3>
+                        <p class="text-zinc-400 text-sm mt-2 leading-relaxed">Biometric smart access, high-pressure filtered HVAC air sanitation, and locker facilities with private executive showers.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Live Interactive Class Schedule -->
+        <section id="schedule" class="py-24 bg-[#0A0B0E] relative">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="flex flex-col md:flex-row md:items-end justify-between mb-12">
+                    <div>
+                        <span class="text-brand-red font-bold text-xs uppercase tracking-widest">Weekly Group Training</span>
+                        <h2 class="font-teko text-4xl sm:text-5xl font-bold tracking-wide mt-1 uppercase text-white">Live Class Schedule</h2>
+                        <p class="text-zinc-400 text-sm mt-2">Filter sessions by day and book your preferred spot in seconds.</p>
+                    </div>
+                    <!-- Day Filter Pills -->
+                    <div class="flex flex-wrap gap-2 mt-6 md:mt-0" id="dayFilters">
+                        <button onclick="filterDay('mon')" class="day-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-brand-red text-white transition-all">Mon</button>
+                        <button onclick="filterDay('tue')" class="day-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-brand-card border border-brand-border text-zinc-400 hover:text-white transition-all">Tue</button>
+                        <button onclick="filterDay('wed')" class="day-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-brand-card border border-brand-border text-zinc-400 hover:text-white transition-all">Wed</button>
+                        <button onclick="filterDay('thu')" class="day-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-brand-card border border-brand-border text-zinc-400 hover:text-white transition-all">Thu</button>
+                        <button onclick="filterDay('fri')" class="day-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-brand-card border border-brand-border text-zinc-400 hover:text-white transition-all">Fri</button>
+                        <button onclick="filterDay('sat')" class="day-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-brand-card border border-brand-border text-zinc-400 hover:text-white transition-all">Sat</button>
+                    </div>
+                </div>
+
+                <!-- Schedule Grid Container -->
+                <div id="scheduleGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Classes dynamically injected by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Elite Trainers Section -->
+        <section id="trainers" class="py-24 bg-[#0D0E13] border-t border-brand-border">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="text-center max-w-2xl mx-auto mb-16">
+                    <span class="text-brand-red font-bold text-xs uppercase tracking-widest">World Class Mentorship</span>
+                    <h2 class="font-teko text-4xl sm:text-5xl font-bold tracking-wide mt-1 uppercase text-white">Elite Coaching Staff</h2>
+                    <p class="text-zinc-400 text-sm mt-3">Our coaches don't just count reps; they analyze biomechanics, calibrate recovery, and push your limits safely.</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Trainer 1 -->
+                    <div class="bg-brand-card border border-brand-border rounded-2xl overflow-hidden group">
+                        <div class="h-80 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1567013127542-490d757e51fc?auto=format&fit=crop&w=800&q=80" alt="Marcus Vance" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-brand-card via-transparent to-transparent"></div>
+                            <span class="absolute bottom-4 left-4 bg-brand-red text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-md">Head Strength Coach</span>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-teko text-2xl font-bold text-white uppercase tracking-wide">Marcus "Viper" Vance</h3>
+                            <p class="text-zinc-400 text-xs mt-1">CSCS Certified, Ex-Olympic Weightlifting Competitor with 10+ years transforming pro athletes.</p>
+                            <div class="mt-4 pt-4 border-t border-brand-border flex items-center justify-between text-xs text-zinc-300">
+                                <span>Specialty: Heavy Compound</span>
+                                <button onclick="openModal()" class="text-brand-red hover:underline font-bold">Book 1-on-1</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Trainer 2 -->
+                    <div class="bg-brand-card border border-brand-border rounded-2xl overflow-hidden group">
+                        <div class="h-80 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1518611012118-696072aa579a?auto=format&fit=crop&w=800&q=80" alt="Elena Rostova" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-brand-card via-transparent to-transparent"></div>
+                            <span class="absolute bottom-4 left-4 bg-brand-red text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-md">HIIT & Metabolic Lead</span>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-teko text-2xl font-bold text-white uppercase tracking-wide">Elena Rostova</h3>
+                            <p class="text-zinc-400 text-xs mt-1">Hyrox World Championship Finisher, Mobility Specialist, Nutritionist & Conditioning Guru.</p>
+                            <div class="mt-4 pt-4 border-t border-brand-border flex items-center justify-between text-xs text-zinc-300">
+                                <span>Specialty: VO2 Max & Agility</span>
+                                <button onclick="openModal()" class="text-brand-red hover:underline font-bold">Book 1-on-1</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Trainer 3 -->
+                    <div class="bg-brand-card border border-brand-border rounded-2xl overflow-hidden group">
+                        <div class="h-80 overflow-hidden relative">
+                            <img src="https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?auto=format&fit=crop&w=800&q=80" alt="Devon Reed" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute inset-0 bg-gradient-to-t from-brand-card via-transparent to-transparent"></div>
+                            <span class="absolute bottom-4 left-4 bg-brand-red text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-md">Hypertrophy Specialist</span>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="font-teko text-2xl font-bold text-white uppercase tracking-wide">Devon "Iron" Reed</h3>
+                            <p class="text-zinc-400 text-xs mt-1">IFBB Pro Bodybuilder, Periodization Expert, master in injury-free progressive muscle overload.</p>
+                            <div class="mt-4 pt-4 border-t border-brand-border flex items-center justify-between text-xs text-zinc-300">
+                                <span>Specialty: Pure Body Sculpting</span>
+                                <button onclick="openModal()" class="text-brand-red hover:underline font-bold">Book 1-on-1</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing & Memberships with Monthly/Annual Toggle -->
+        <section id="pricing" class="py-24 bg-[#0A0B0E] relative">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="text-center max-w-2xl mx-auto mb-12">
+                    <span class="text-brand-red font-bold text-xs uppercase tracking-widest">Straightforward Pricing</span>
+                    <h2 class="font-teko text-4xl sm:text-5xl font-bold tracking-wide mt-1 uppercase text-white">Membership Plans</h2>
+                    <p class="text-zinc-400 text-sm mt-3">No hidden registration fees. Cancel or freeze anytime with zero penalties.</p>
+
+                    <!-- Billing Toggle -->
+                    <div class="mt-8 inline-flex items-center gap-3 bg-brand-card p-1.5 rounded-full border border-brand-border">
+                        <button id="monthlyBtn" onclick="setBilling('monthly')" class="px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider bg-brand-red text-white transition-all">Monthly</button>
+                        <button id="annualBtn" onclick="setBilling('annual')" class="px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-white transition-all flex items-center gap-1.5">
+                            <span>Annual</span>
+                            <span class="text-[10px] bg-green-500/20 text-green-400 font-bold px-1.5 py-0.5 rounded-md border border-green-500/30">Save 20%</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+                    <!-- Basic Tier -->
+                    <div class="bg-brand-card border border-brand-border rounded-2xl p-8 flex flex-col justify-between hover:border-zinc-600 transition-colors">
+                        <div>
+                            <span class="text-xs font-bold text-zinc-400 uppercase tracking-widest">Standard Access</span>
+                            <h3 class="font-teko text-3xl font-bold uppercase text-white mt-1">Core Member</h3>
+                            <div class="mt-4 flex items-baseline gap-1">
+                                <span class="font-teko text-5xl font-bold text-white price-display" data-monthly="₹2,499" data-annual="₹1,999">₹2,499</span>
+                                <span class="text-zinc-400 text-xs">/month</span>
+                            </div>
+                            <p class="text-zinc-400 text-xs mt-3">Essential equipment access for dedicated everyday gym-goers.</p>
+                            
+                            <ul class="mt-8 space-y-3.5 text-xs text-zinc-300">
+                                <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand-red"></i> Gym floor access (06:00 - 22:00)</li>
+                                <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand-red"></i> Locker & Shower room amenities</li>
+                                <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand-red"></i> Initial InBody assessment</li>
+                                <li class="flex items-center gap-2.5 text-zinc-500 line-through"><i data-lucide="x" class="w-4 h-4 text-zinc-600"></i> Group classes access</li>
+                                <li class="flex items-center gap-2.5 text-zinc-500 line-through"><i data-lucide="x" class="w-4 h-4 text-zinc-600"></i> Cold plunge & Sauna access</li>
+                            </ul>
+                        </div>
+                        <button onclick="openModal()" class="w-full mt-8 bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-3.5 rounded-xl uppercase tracking-wider text-xs transition-colors">
+                            Select Core
+                        </button>
+                    </div>
+
+                    <!-- Pro Tier (Most Popular) -->
+                    <div class="bg-brand-card border-2 border-brand-red rounded-2xl p-8 flex flex-col justify-between relative shadow-2xl glow-red">
+                        <div class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-brand-red text-white text-[10px] font-black uppercase tracking-widest px-4 py-1 rounded-full shadow-md">
+                            Most Popular Choice
+                        </div>
+                        <div>
+                            <span class="text-xs font-bold text-brand-red uppercase tracking-widest">Full Experience</span>
+                            <h3 class="font-teko text-3xl font-bold uppercase text-white mt-1">Titan Elite</h3>
+                            <div class="mt-4 flex items-baseline gap-1">
+                                <span class="font-teko text-5xl font-bold text-brand-red price-display" data-monthly="₹4,499" data-annual="₹3,599">₹4,499</span>
+                                <span class="text-zinc-400 text-xs">/month</span>
+                            </div>
+                            <p class="text-zinc-400 text-xs mt-3">Full 24/7 club privileges including classes and hydrotherapy.</p>
+                            
+                            <ul class="mt-8 space-y-3.5 text-xs text-zinc-200">
+                                <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand-red"></i> Unlimited 24/7 Keycard Access</li>
+                                <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand-red"></i> All Group Classes (CrossFit, Boxing, HIIT)</li>
+                                <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand-red"></i> Weekly Sauna & Contrast Bath</li>
+                                <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand-red"></i> 2 Complimentary Guest Passes / Month</li>
+                                <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand-red"></i> Monthly Nutrition Consultation</li>
+                            </ul>
+                        </div>
+                        <button onclick="openModal()" class="w-full mt-8 bg-brand-red hover:bg-[#ff1f40] text-white font-bold py-3.5 rounded-xl uppercase tracking-wider text-xs glow-red transition-all">
+                            Get Titan Elite
+                        </button>
+                    </div>
+
+                    <!-- VIP Tier -->
+                    <div class="bg-brand-card border border-brand-border rounded-2xl p-8 flex flex-col justify-between hover:border-zinc-600 transition-colors">
+                        <div>
+                            <span class="text-xs font-bold text-zinc-400 uppercase tracking-widest">Ultimate Mentorship</span>
+                            <h3 class="font-teko text-3xl font-bold uppercase text-white mt-1">Black Card VIP</h3>
+                            <div class="mt-4 flex items-baseline gap-1">
+                                <span class="font-teko text-5xl font-bold text-white price-display" data-monthly="₹8,999" data-annual="₹7,199">₹8,999</span>
+                                <span class="text-zinc-400 text-xs">/month</span>
+                            </div>
+                            <p class="text-zinc-400 text-xs mt-3">Dedicated coach, custom diet plan & executive luxury perks.</p>
+                            
+                            <ul class="mt-8 space-y-3.5 text-xs text-zinc-300">
+                                <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand-red"></i> Everything in Titan Elite Plan</li>
+                                <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand-red"></i> 8 Dedicated 1-on-1 PT Sessions / Month</li>
+                                <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand-red"></i> Reserved Private Executive Locker</li>
+                                <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand-red"></i> Daily Post-Workout Protein Smoothie</li>
+                                <li class="flex items-center gap-2.5"><i data-lucide="check" class="w-4 h-4 text-brand-red"></i> Priority Class & Recovery Reservations</li>
+                            </ul>
+                        </div>
+                        <button onclick="openModal()" class="w-full mt-8 bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-3.5 rounded-xl uppercase tracking-wider text-xs transition-colors">
+                            Apply For Black Card
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials -->
+        <section class="py-24 bg-[#0D0E13] border-t border-brand-border">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="text-center max-w-2xl mx-auto mb-16">
+                    <span class="text-brand-red font-bold text-xs uppercase tracking-widest">Real Transformations</span>
+                    <h2 class="font-teko text-4xl sm:text-5xl font-bold tracking-wide mt-1 uppercase text-white">What Our Athletes Say</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Review 1 -->
+                    <div class="bg-brand-card border border-brand-border p-8 rounded-2xl">
+                        <div class="flex text-amber-400 gap-1 mb-4">
+                            ★★★★★
+                        </div>
+                        <p class="text-zinc-300 text-sm italic leading-relaxed">"The Eleiko equipment quality and the 24/7 keycard access are unmatchable in Pune. Lost 14kg in 4 months under Coach Marcus's guidance."</p>
+                        <div class="mt-6 flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-zinc-800 border border-brand-border flex items-center justify-center font-bold text-sm text-brand-red">RK</div>
+                            <div>
+                                <h4 class="font-bold text-sm text-white">Rohan Kulkarni</h4>
+                                <span class="text-[11px] text-zinc-500">Member for 9 Months</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Review 2 -->
+                    <div class="bg-brand-card border border-brand-border p-8 rounded-2xl">
+                        <div class="flex text-amber-400 gap-1 mb-4">
+                            ★★★★★
+                        </div>
+                        <p class="text-zinc-300 text-sm italic leading-relaxed">"The contrast ice plunge and sauna sessions after a brutal leg day are game-changing. No other gym provides this kind of recovery suite."</p>
+                        <div class="mt-6 flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-zinc-800 border border-brand-border flex items-center justify-center font-bold text-sm text-brand-red">AP</div>
+                            <div>
+                                <h4 class="font-bold text-sm text-white">Ananya Patil</h4>
+                                <span class="text-[11px] text-zinc-500">CrossFit & HIIT Regular</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Review 3 -->
+                    <div class="bg-brand-card border border-brand-border p-8 rounded-2xl">
+                        <div class="flex text-amber-400 gap-1 mb-4">
+                            ★★★★★
+                        </div>
+                        <p class="text-zinc-300 text-sm italic leading-relaxed">"Pure athletic vibe. No casual crowds hogging phones on machines. The trainers genuinely know sports science and nutrition mechanics."</p>
+                        <div class="mt-6 flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-zinc-800 border border-brand-border flex items-center justify-center font-bold text-sm text-brand-red">SM</div>
+                            <div>
+                                <h4 class="font-bold text-sm text-white">Siddharth Mehta</h4>
+                                <span class="text-[11px] text-zinc-500">Powerlifting Athlete</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Accordion -->
+        <section id="faq" class="py-24 bg-[#0A0B0E]">
+            <div class="max-w-4xl mx-auto px-6">
+                <div class="text-center mb-16">
+                    <span class="text-brand-red font-bold text-xs uppercase tracking-widest">Common Inquiries</span>
+                    <h2 class="font-teko text-4xl sm:text-5xl font-bold tracking-wide mt-1 uppercase text-white">Frequently Asked Questions</h2>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- Accordion 1 -->
+                    <div class="border border-brand-border rounded-xl bg-brand-card overflow-hidden">
+                        <button onclick="toggleFaq(1)" class="w-full text-left px-6 py-5 flex items-center justify-between font-bold text-sm text-white hover:text-brand-red transition-colors">
+                            <span>How does the 1-Day Free VIP Pass work?</span>
+                            <i data-lucide="chevron-down" id="faq-icon-1" class="w-5 h-5 transition-transform duration-200"></i>
+                        </button>
+                        <div id="faq-body-1" class="hidden px-6 pb-5 text-xs text-zinc-400 leading-relaxed border-t border-brand-border/50 pt-3">
+                            Simply book using our Free Trial form. You will receive an instant digital QR pass to show at front reception. It gives you unrestricted day access to all machines, locker facilities, and a 15-minute consultation.
+                        </div>
+                    </div>
+
+                    <!-- Accordion 2 -->
+                    <div class="border border-brand-border rounded-xl bg-brand-card overflow-hidden">
+                        <button onclick="toggleFaq(2)" class="w-full text-left px-6 py-5 flex items-center justify-between font-bold text-sm text-white hover:text-brand-red transition-colors">
+                            <span>Can I freeze or pause my membership during travel?</span>
+                            <i data-lucide="chevron-down" id="faq-icon-2" class="w-5 h-5 transition-transform duration-200"></i>
+                        </button>
+                        <div id="faq-body-2" class="hidden px-6 pb-5 text-xs text-zinc-400 leading-relaxed border-t border-brand-border/50 pt-3">
+                            Yes! Members can freeze their account for up to 45 days per year at zero penalty or cost by notifying front desk or through our member portal.
+                        </div>
+                    </div>
+
+                    <!-- Accordion 3 -->
+                    <div class="border border-brand-border rounded-xl bg-brand-card overflow-hidden">
+                        <button onclick="toggleFaq(3)" class="w-full text-left px-6 py-5 flex items-center justify-between font-bold text-sm text-white hover:text-brand-red transition-colors">
+                            <span>Are group classes included in the standard membership?</span>
+                            <i data-lucide="chevron-down" id="faq-icon-3" class="w-5 h-5 transition-transform duration-200"></i>
+                        </button>
+                        <div id="faq-body-3" class="hidden px-6 pb-5 text-xs text-zinc-400 leading-relaxed border-t border-brand-border/50 pt-3">
+                            Group classes (HIIT, Boxing, CrossFit, Yoga) are fully included in the Titan Elite and Black Card VIP memberships. Core members can book drop-in sessions at discounted rates.
+                        </div>
+                    </div>
+
+                    <!-- Accordion 4 -->
+                    <div class="border border-brand-border rounded-xl bg-brand-card overflow-hidden">
+                        <button onclick="toggleFaq(4)" class="w-full text-left px-6 py-5 flex items-center justify-between font-bold text-sm text-white hover:text-brand-red transition-colors">
+                            <span>Is there dedicated valet parking available?</span>
+                            <i data-lucide="chevron-down" id="faq-icon-4" class="w-5 h-5 transition-transform duration-200"></i>
+                        </button>
+                        <div id="faq-body-4" class="hidden px-6 pb-5 text-xs text-zinc-400 leading-relaxed border-t border-brand-border/50 pt-3">
+                            Yes, we offer complimentary 2-hour underground basement parking with EV charging stations for both two-wheelers and cars.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Banner -->
+        <section class="py-20 bg-gradient-to-r from-brand-darkred to-brand-red text-white text-center relative overflow-hidden">
+            <div class="max-w-4xl mx-auto px-6 relative z-10">
+                <h2 class="font-teko text-5xl sm:text-6xl font-bold uppercase tracking-wide">Stop Waiting. Claim Your Free Trial Today.</h2>
+                <p class="text-white/80 text-sm max-w-xl mx-auto mt-2">Zero pressure, no upfront fees. Test our machines and environment yourself before deciding.</p>
+                <div class="mt-8 flex justify-center">
+                    <button onclick="openModal()" class="bg-black text-white hover:bg-zinc-900 px-8 py-4 rounded-xl font-bold uppercase tracking-wider text-sm shadow-2xl transition-all transform hover:scale-105">
+                        Reserve Free Trial Pass
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#07080B] border-t border-white/5 py-12 text-zinc-500 text-xs">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded bg-brand-red flex items-center justify-center font-teko text-lg font-bold text-white">TF</div>
+                <span class="font-teko text-xl text-white tracking-wider">TITAN FORGE</span>
+                <span class="text-zinc-600">| © 2026 Titan Forge Fitness Club. All Rights Reserved.</span>
+            </div>
+            <div class="flex gap-6">
+                <a href="#about" class="hover:text-zinc-300 transition-colors">Privacy Policy</a>
+                <a href="#features" class="hover:text-zinc-300 transition-colors">Terms of Service</a>
+                <a href="#faq" class="hover:text-zinc-300 transition-colors">Contact Support</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive Script -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Class Data for dynamic schedule
+        const scheduleData = {
+            mon: [
+                { time: "06:30 AM", title: "Hyrox Functional Conditioning", coach: "Elena Rostova", spots: "3 left", intensity: "High" },
+                { time: "08:00 AM", title: "Powerlifting Compound Barbell", coach: "Marcus Vance", spots: "Full", intensity: "Extreme" },
+                { time: "06:00 PM", title: "HIIT Tabata Burnout", coach: "Elena Rostova", spots: "5 left", intensity: "High" },
+                { time: "07:30 PM", title: "Hypertrophy Chest & Delts", coach: "Devon Reed", spots: "2 left", intensity: "Medium" }
+            ],
+            tue: [
+                { time: "07:00 AM", title: "Olympic Snatch & Clean Workshop", coach: "Marcus Vance", spots: "4 left", intensity: "Extreme" },
+                { time: "09:00 AM", title: "Mobility & Thoracic Decompression", coach: "Elena Rostova", spots: "8 left", intensity: "Low" },
+                { time: "06:30 PM", title: "Combat Kickboxing Conditioning", coach: "Alex Ray", spots: "1 left", intensity: "High" }
+            ],
+            wed: [
+                { time: "06:30 AM", title: "Deadlift & Posterior Chain Focus", coach: "Marcus Vance", spots: "Full", intensity: "Extreme" },
+                { time: "08:30 AM", title: "Endurance Row & SkiErg Blitz", coach: "Elena Rostova", spots: "6 left", intensity: "High" },
+                { time: "07:00 PM", title: "Arms & Core Demolition", coach: "Devon Reed", spots: "3 left", intensity: "Medium" }
+            ],
+            thu: [
+                { time: "07:00 AM", title: "Kettlebell Flow & Kinetic Movement", coach: "Elena Rostova", spots: "5 left", intensity: "Medium" },
+                { time: "06:00 PM", title: "Heavy Squat Mechanics", coach: "Marcus Vance", spots: "2 left", intensity: "Extreme" },
+                { time: "07:30 PM", title: "High-Volume Back Hypertrophy", coach: "Devon Reed", spots: "4 left", intensity: "High" }
+            ],
+            fri: [
+                { time: "06:30 AM", title: "Full-Body Circuit Burn", coach: "Elena Rostova", spots: "4 left", intensity: "High" },
+                { time: "06:30 PM", title: "Olympic Jerk & Overhead Strength", coach: "Marcus Vance", spots: "Full", intensity: "Extreme" },
+                { time: "08:00 PM", title: "Community Friday Lifting Jam", coach: "All Coaches", spots: "Open", intensity: "High" }
+            ],
+            sat: [
+                { time: "08:00 AM", title: "Saturday Spartan Beast Endurance", coach: "Elena Rostova", spots: "2 left", intensity: "Extreme" },
+                { time: "10:30 AM", title: "Contrast Plunge & Breathwork", coach: "Guest Coach", spots: "6 left", intensity: "Recovery" },
+                { time: "05:00 PM", title: "Open Gym & Form Assessment", coach: "Marcus Vance", spots: "Open", intensity: "All Levels" }
+            ]
+        };
+
+        // Render schedule cards
+        function renderSchedule(day) {
+            const container = document.getElementById('scheduleGrid');
+            const items = scheduleData[day] || [];
+            
+            container.innerHTML = items.map(c => `
+                <div class="bg-brand-card border border-brand-border p-6 rounded-2xl flex flex-col justify-between hover:border-brand-red/50 transition-all">
+                    <div>
+                        <div class="flex items-center justify-between text-xs mb-3">
+                            <span class="font-bold text-brand-red tracking-wider flex items-center gap-1.5">
+                                <i data-lucide="clock" class="w-3.5 h-3.5"></i> ${c.time}
+                            </span>
+                            <span class="px-2.5 py-0.5 rounded-full ${c.spots === 'Full' ? 'bg-red-500/20 text-red-400' : 'bg-emerald-500/20 text-emerald-400'} font-bold text-[10px] uppercase">
+                                ${c.spots}
+                            </span>
+                        </div>
+                        <h4 class="font-teko text-2xl font-bold uppercase text-white tracking-wide leading-tight">${c.title}</h4>
+                        <p class="text-zinc-400 text-xs mt-1">Instructor: <span class="text-zinc-200 font-semibold">${c.coach}</span></p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-brand-border flex items-center justify-between">
+                        <span class="text-[11px] text-zinc-500 uppercase tracking-wider font-semibold">Intensity: <span class="text-zinc-300">${c.intensity}</span></span>
+                        <button onclick="bookClass('${c.title}')" class="text-xs bg-white/5 hover:bg-brand-red hover:text-white px-3 py-1.5 rounded-lg border border-white/10 text-zinc-300 font-bold transition-all">
+                            Book Spot
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        }
+
+        // Day Filter logic
+        function filterDay(day) {
+            const buttons = document.querySelectorAll('.day-btn');
+            buttons.forEach(btn => {
+                btn.className = 'day-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-brand-card border border-brand-border text-zinc-400 hover:text-white transition-all';
+            });
+            event.target.className = 'day-btn px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-brand-red text-white transition-all';
+            renderSchedule(day);
+        }
+
+        // Toggle Pricing Billing
+        function setBilling(mode) {
+            const prices = document.querySelectorAll('.price-display');
+            const mBtn = document.getElementById('monthlyBtn');
+            const aBtn = document.getElementById('annualBtn');
+
+            if (mode === 'annual') {
+                prices.forEach(p => p.textContent = p.dataset.annual);
+                aBtn.className = 'px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider bg-brand-red text-white transition-all flex items-center gap-1.5';
+                mBtn.className = 'px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-white transition-all';
+                showToast("Annual Discount Applied", "20% savings calculated on all plans!");
+            } else {
+                prices.forEach(p => p.textContent = p.dataset.monthly);
+                mBtn.className = 'px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider bg-brand-red text-white transition-all';
+                aBtn.className = 'px-5 py-2 rounded-full text-xs font-bold uppercase tracking-wider text-zinc-400 hover:text-white transition-all flex items-center gap-1.5';
+            }
+        }
+
+        // Modal Functions
+        function openModal() {
+            document.getElementById('bookingModal').classList.remove('hidden');
+        }
+        function closeModal() {
+            document.getElementById('bookingModal').classList.add('hidden');
+        }
+        function handleModalSubmit(e) {
+            e.preventDefault();
+            closeModal();
+            showToast("Trial Pass Reserved!", "Our team will WhatsApp your confirmation QR pass.");
+            e.target.reset();
+        }
+
+        function bookClass(title) {
+            showToast("Class Selected!", `Slot reserved for: ${title}`);
+        }
+
+        // Toast Helper
+        function showToast(title, msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-title').innerText = title;
+            document.getElementById('toast-msg').innerText = msg;
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+                toast.classList.remove('translate-y-0', 'opacity-100');
+            }, 3500);
+        }
+
+        // FAQ Toggle
+        function toggleFaq(id) {
+            const body = document.getElementById(`faq-body-${id}`);
+            const icon = document.getElementById(`faq-icon-${id}`);
+            const isHidden = body.classList.contains('hidden');
+
+            // Close all
+            for(let i=1; i<=4; i++) {
+                document.getElementById(`faq-body-${i}`).classList.add('hidden');
+                document.getElementById(`faq-icon-${i}`).classList.remove('rotate-180');
+            }
+
+            if(isHidden) {
+                body.classList.remove('hidden');
+                icon.classList.add('rotate-180');
+            }
+        }
+
+        // Mobile Menu Toggle
+        const menuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        function toggleMenu() {
+            mobileMenu.classList.toggle('hidden');
+        }
+        menuBtn.addEventListener('click', toggleMenu);
+
+        // Initial schedule load
+        renderSchedule('mon');
+    </script>
+</body>
+</html>
