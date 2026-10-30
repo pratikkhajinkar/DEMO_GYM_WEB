@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Titan Forge - Elite Gym & Fitness Website
 
 This repository contains the complete source code for the modern, high-conversion Gym & Fitness website.
@@ -16,3 +17,6 @@ This repository contains the complete source code for the modern, high-conversio
 3. In GitHub, go to **Settings** -> **Pages**.
 4. Under **Branch**, select `main` (or `master`) and folder `/ (root)`, then click **Save**.
 5. Your website will be live in 1-2 minutes at: `https://<your-username>.github.io/<repo-name>/`
+=======
+# DEMO_GYM_WEB
+>>>>>>> 013fbee030ac022ced9309d8fd55a0f93bb87ce8
